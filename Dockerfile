@@ -1,4 +1,9 @@
-FROM openjdk:17
-EXPOSE 8080
-ADD target/simplespringbootapp.jar simplespringbootapp.jar
-ENTRYPOINT ["java" ,"-jar" ,"/simplespringbootapp.jar"]
+FROM maven:3.9.6-eclipse-temurin-17 AS build
+WORKDIR /simplespringbootapp
+COPY . .
+RUN mvn clean package -DskipTests
+
+FROM eclipse-temurin:17-jdk-alpine
+WORKDIR /simplespringbootapp
+COPY --from=build /app/target/simplespringbootapp.jar simplespringbootapp.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]
